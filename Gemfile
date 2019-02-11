@@ -12,6 +12,10 @@ gem 'faker', '1.1.2'
 gem 'will_paginate', '3.0.4'
 gem 'bootstrap-will_paginate', '0.0.9'
 
+
+
+
+
 #开发环境
 group :development, :test do
 gem 'rubyzip', '0.9.9'
