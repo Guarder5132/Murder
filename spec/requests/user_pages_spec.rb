@@ -38,6 +38,15 @@ describe "UserPages" do
       it "应该创建用户成功" do
         expect{ click_button submit }.to change(User, :count).by(1)
       end
+
+      describe "创建成功后应该登录用户" do
+        before { click_button submit }
+        let(:user) { User.find_by(email: 'hua@qq.com') }
+        
+        it { should have_title(user.name) }
+        it { should have_link('Sign out') }
+        it { should have_selector('div.alert.alert-success', text: 'Welcome') }
+      end
     end
   end
 
