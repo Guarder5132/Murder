@@ -12,9 +12,22 @@ describe User do
   it { should respond_to(:password_confirmation) }
   it { should respond_to(:authenticate) }
   it { should respond_to(:remember_token) }
+  it { should respond_to(:admin) }
+  it { should respond_to(:microposts) }
+  it { should respond_to(:feed) }
 
   
   it { should be_valid }
+  it { should_not be_admin }
+
+  describe "admin" do
+    before do
+      @user.save!
+      @user.toggle!(:admin)
+    end
+
+    it { should be_admin }
+  end
 
   describe "name" do
 
@@ -115,5 +128,32 @@ describe User do
   describe "remember token" do
     before { @user.save }
     its(:remember_token) { should_not be_blank }
+  end
+
+  describe "micropost" do
+    before { @user.save }
+    let!(:old_micropost) { @user.microposts.create(content:"huahua",created_at: 1.day.ago) }
+    let!(:new_micropost) { @user.microposts.create(content:"nannan",created_at: 1.hour.ago) }
+    
+    it "应该按照正确的顺序"  do
+      expect(@user.microposts.to_a).to eq [new_micropost, old_micropost]
+    end
+
+    it "用户删除后，微博是否也删除" do
+      microposts = @user.microposts.to_a
+      @user.destroy
+      expect(microposts).not_to be_empty
+      microposts.each do |micropost|
+        expect(Micropost.where(id: micropost.id)).to be_empty
+      end
+    end
+
+    describe "status" do
+      let(:unuser_post) { FactoryGirl.create(:micropost, user: FactoryGirl.create(:user)) }
+      
+      its(:feed) { should include(new_micropost) } 
+      its(:feed) { should include(old_micropost) }
+      its(:feed) { should_not include(unuser_post) }
+    end
   end
 end
