@@ -33,4 +33,15 @@ describe "MicropostPages" do
     end
   end
 
+  describe "微博删除" do
+    before { FactoryGirl.create(:micropost, user: user) }
+
+    describe "为当前用户" do
+      before {visit root_path}
+
+      it "应该删除成功" do
+        expect { click_link "delete" }.to change(Micropost, :count).by(-1)
+      end
+    end
+  end
 end
