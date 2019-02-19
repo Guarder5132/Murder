@@ -76,6 +76,26 @@ describe "Authentication Pages" do
         before { delete micropost_path(FactoryGirl.create(:micropost)) }
         specify { expect(response).to redirect_to(signin_path) }
       end
+
+      describe "访问关注用户列表时" do
+        before { visit following_user_path(user) }
+        it { should have_title('Sign in') }
+      end
+
+      describe "访问粉丝用户列表时" do
+        before { visit followers_user_path(user) }
+        it { should have_title('Sign in') }
+      end 
+
+      describe "在关系控制起中提交创建操作" do
+        before { post relationships_path }
+        specify { expect(response).to redirect_to signin_path }
+      end
+
+      describe "在关系控制器中提交删除行动" do
+        before { delete relationship_path(1) }
+        specify { expect(response).to redirect_to signin_path }
+      end
     end
 
     describe "于登录的用户" do
